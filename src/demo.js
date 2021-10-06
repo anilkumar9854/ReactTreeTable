@@ -66,7 +66,6 @@ const validate = (changed, validationStatus) => Object.keys(changed).reduce((sta
     rowStatus = {
       ...rowStatus,
       ...Object.keys(changed[id]).reduce((acc, field) => {
-        console.log(validationRules[field].isValid(changed[id][field]));
         const isValid = validationRules[field].isValid(changed[id][field]);
         return {
           ...acc,
@@ -96,15 +95,8 @@ export default () => {
     fetch(apiUrl)
       .then((response) => response.json())
       .then((data) => {
-        setRows(data)
-        console.log('This is your data', data)
-        console.log('This is your data', datas)
+        setRows(data);
     },[]);
-    // const apiUrl = 'https://api.github.com/users/hacktivist123/repos';
-    // axios.get(apiUrl).then((repos) => {
-    //   const allRepos = repos.data;
-    //   // setAppState({ loading: false, repos: allRepos });
-    // });
 },[]);
   const [columns] = useState([
     { name: 'name', title: 'Name' },
@@ -112,7 +104,7 @@ export default () => {
     { name: 'city', title: 'City' },
     { name: 'car', title: 'Car' },
   ]);
-  //const [rows] = useState(generateRows({ length: 8 }));
+  
   const [selection, setSelection] = useState([]);
   const [update_disable, setUpdateDisable] = useState("false");
   
@@ -129,16 +121,13 @@ export default () => {
   ]);
   const [defaultExpandedRowIds] = useState([0,1,2,3,4,5,6]);
   const onSumbnit= () =>{
-    let selectedRows=data.filter(function(d){
+    let selectedRows=rows.filter(function(d){
       return selection.indexOf(d.id)!=-1
     });
     console.log(selectedRows);
   
   }
 
-  
-  
-  
   const [editingRowIds, setEditingRowIds] = useState([]);
   const [rowChanges, setRowChanges] = useState({});
   const [validationStatus, setValidationStatus] = useState({});
@@ -181,13 +170,11 @@ const Command = ({ id, onExecute }) => {
     />
   );
 };
-  console.log(apiData);
+  
   const commitChanges = ({ changed, deleted }) => {
     let changedRows;
     if (changed) {
-      console.log(changed);
       changedRows = rows.map(row => (changed[row.id] ? { ...row, ...changed[row.id] } : row));
-      console.log(changedRows);
       setValidationStatus({ ...validationStatus, ...validate(changed, validationStatus) });
     }
     if (deleted) {
@@ -196,7 +183,6 @@ const Command = ({ id, onExecute }) => {
     }
 
     setRows(changedRows);
-    console.log(changedRows);
     setModifiedRows(changedRows);
   };
   const Cell = React.useCallback((props) => {
@@ -234,7 +220,6 @@ const Command = ({ id, onExecute }) => {
               onEditingRowIdsChange={setEditingRowIds}
               rowChanges={rowChanges}
               onRowChangesChange={(e) => {
-                console.log('its working');
                 setRowChanges(e);
                 setUpdateDisable("false");
               }}
@@ -257,7 +242,8 @@ const Command = ({ id, onExecute }) => {
               pageSize={6}
             />
             <TableEditColumn
-              
+              width={80}
+              showAddCommand
               showDeleteCommand
               commandComponent={Command}
             />
