@@ -177,65 +177,67 @@ export default () => {
   }, [validationStatus]);
   return (
     <div>
-    <Paper>
-    <Grid
-        rows={rows}
-        columns={columns}
-      >
-        <EditingState
-          editingRowIds={editingRowIds}
-          onEditingRowIdsChange={setEditingRowIds}
-          rowChanges={rowChanges}
-          onRowChangesChange={(e) => {
-            console.log('its working');
-            setRowChanges(e);
-            setUpdateDisable("false");
-          }}
-          onCommitChanges={commitChanges}
-        />
-        <Table
-          cellComponent={Cell}
-        />
-        <TreeDataState
-          defaultExpandedRowIds={defaultExpandedRowIds}
-        />
-        <CustomTreeData
-          getChildRows={getChildRows}
-        />
-        <Table
-          columnExtensions={tableColumnExtensions}
-        />
-        <SelectionState
-          selection={selection}
-          onSelectionChange={setSelection}
-        />
-        <PagingState
-          defaultCurrentPage={0}
-          pageSize={6}
-        />
-        <TableEditColumn
-          showAddCommand
-          showDeleteCommand
-        />
-        <IntegratedSelection />
-        <IntegratedPaging />
-        <TableHeaderRow />
-        <TableTreeColumn
-          for="name"
-          showSelectionControls
-          showSelectAll
-        />
-        <TableInlineCellEditing />
-        {/* <PagingPanel /> */}
-      </Grid>
-    </Paper>
-    <div className="btns" style={{paddingTop:'10px'}}>
-      <button onClick={() => {
-        setRows(modifiedRows);
-        setUpdateDisable("true");
-      }} >Update</button>
-     <button onClick={onSumbnit}>Submit</button>
-    </div>
+      <div className="table_container">
+      <Paper>
+      <Grid
+          rows={rows}
+          columns={columns}
+        >
+          <EditingState
+            editingRowIds={editingRowIds}
+            onEditingRowIdsChange={setEditingRowIds}
+            rowChanges={rowChanges}
+            onRowChangesChange={(e) => {
+              console.log('its working');
+              setRowChanges(e);
+              setUpdateDisable("false");
+            }}
+            onCommitChanges={commitChanges}
+          />
+          <Table
+            cellComponent={Cell}
+          />
+          <TreeDataState
+            defaultExpandedRowIds={defaultExpandedRowIds}
+          />
+          <CustomTreeData
+            getChildRows={getChildRows}
+          />
+          <Table
+            columnExtensions={tableColumnExtensions}
+          />
+          <SelectionState
+            selection={selection}
+            onSelectionChange={setSelection}
+          />
+          <PagingState
+            defaultCurrentPage={0}
+            pageSize={6}
+          />
+          <TableEditColumn
+            showAddCommand
+            showDeleteCommand
+          />
+          <IntegratedSelection />
+          <IntegratedPaging />
+          <TableHeaderRow />
+          <TableTreeColumn
+            for="name"
+            showSelectionControls
+            showSelectAll
+          />
+          <TableInlineCellEditing />
+          {/* <PagingPanel /> */}
+        </Grid>
+      </Paper>
+      </div>
+      <div className="btns" style={{paddingTop:'10px'}}>
+        <button onClick={() => {
+          setRows(modifiedRows);
+          setUpdateDisable("true");
+        }} >Update</button>
+      <button onClick={onSumbnit}>Submit</button>
+      </div>
     </div>
   );
 };
