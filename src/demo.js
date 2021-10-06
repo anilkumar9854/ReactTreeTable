@@ -17,6 +17,9 @@ import {
   TableEditRow, TableInlineCellEditing,TableEditColumn,
 } from '@devexpress/dx-react-grid-material-ui';
 
+import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 
 
 import {
@@ -140,6 +143,44 @@ export default () => {
   const [rowChanges, setRowChanges] = useState({});
   const [validationStatus, setValidationStatus] = useState({});
   const [modifiedRows, setModifiedRows] = useState(rows);
+  const DeleteButton = ({ onExecute }) => (
+    <IconButton
+      onClick={() => {
+        // eslint-disable-next-line
+        if (window.confirm('Are you sure you want to delete this row?')) {
+          onExecute();
+        }
+      }}
+      title="Delete row"
+    >
+      <DeleteIcon />
+    </IconButton>
+  );
+  
+const AddButton = ({ onExecute }) => (
+  <div style={{ textAlign: 'center' }}>
+    <Button
+      color="primary"
+      onClick={onExecute}
+      title="Create new row"
+    >
+      New
+    </Button>
+  </div>
+);
+  const commandComponents = {
+    add: AddButton,
+    delete: DeleteButton,
+  };
+  
+const Command = ({ id, onExecute }) => {
+  const CommandButton = commandComponents[id];
+  return (
+    <CommandButton
+      onExecute={onExecute}
+    />
+  );
+};
   console.log(apiData);
   const commitChanges = ({ changed, deleted }) => {
     let changedRows;
@@ -177,59 +218,62 @@ export default () => {
   }, [validationStatus]);
   return (
     <div>
-      <div className="table_container">
-      <Paper>
-      <Grid
-          rows={rows}
-          columns={columns}
-        >
-          <EditingState
-            editingRowIds={editingRowIds}
-            onEditingRowIdsChange={setEditingRowIds}
-            rowChanges={rowChanges}
-            onRowChangesChange={(e) => {
-              console.log('its working');
-              setRowChanges(e);
-              setUpdateDisable("false");
-            }}
-            onCommitChanges={commitChanges}
-          />
-          <Table
-            cellComponent={Cell}
-          />
-          <TreeDataState
-            defaultExpandedRowIds={defaultExpandedRowIds}
-          />
-          <CustomTreeData
-            getChildRows={getChildRows}
-          />
-          <Table
-            columnExtensions={tableColumnExtensions}
-          />
+      <div>
+        <div className="table_container">
+        <Paper>
+        <Grid
+            rows={rows}
+            columns={columns}
+          >
           <SelectionState
             selection={selection}
             onSelectionChange={setSelection}
           />
-          <PagingState
-            defaultCurrentPage={0}
-            pageSize={6}
-          />
-          <TableEditColumn
-            showAddCommand
-            showDeleteCommand
-          />
-          <IntegratedSelection />
-          <IntegratedPaging />
-          <TableHeaderRow />
-          <TableTreeColumn
-            for="name"
-            showSelectionControls
-            showSelectAll
-          />
-          <TableInlineCellEditing />
-          {/* <PagingPanel /> */}
-        </Grid>
-      </Paper>
+            <EditingState
+              editingRowIds={editingRowIds}
+              onEditingRowIdsChange={setEditingRowIds}
+              rowChanges={rowChanges}
+              onRowChangesChange={(e) => {
+                console.log('its working');
+                setRowChanges(e);
+                setUpdateDisable("false");
+              }}
+              onCommitChanges={commitChanges}
+            />
+            <Table
+              cellComponent={Cell}
+            />
+            <TreeDataState
+              defaultExpandedRowIds={defaultExpandedRowIds}
+            />
+            <CustomTreeData
+              getChildRows={getChildRows}
+            />
+            <Table
+              columnExtensions={tableColumnExtensions}
+            />
+            <PagingState
+              defaultCurrentPage={0}
+              pageSize={6}
+            />
+            <TableEditColumn
+              
+              showDeleteCommand
+              commandComponent={Command}
+            />
+            <IntegratedSelection />
+            <IntegratedPaging />
+            <TableHeaderRow />
+            <TableTreeColumn
+              for="name"
+              showSelectionControls
+              showSelectAll
+            />
+            <TableInlineCellEditing />
+            {/* <PagingPanel /> */}
+          </Grid>
+        </Paper>
+        </div>
       </div>
       <div className="btns" style={{paddingTop:'10px'}}>
         <button onClick={() => {
