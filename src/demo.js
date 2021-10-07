@@ -242,7 +242,6 @@ const Command = ({ id, onExecute }) => {
             />
             <TableEditColumn
               width={60}
-              showAddCommand
               showDeleteCommand
               commandComponent={Command}
             />
