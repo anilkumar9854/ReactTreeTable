@@ -85,3 +85,7 @@ table tbody tr td button svg path{
   color: rgba(0, 0, 0, 0.65);
   transform: translateY(0);
 }
+ td:nth-child(3) {
+  color: steelblue;
+  font-weight: bold;
+}
