@@ -82,13 +82,12 @@ export default () => {
   const [rows, setRows] = useState(
     []
 );
-console.log(rows);
+
   useEffect( () => {
     const apiUrl = 'https://raw.githubusercontent.com/anilkumar9854/treetabledata/main/treeData.json';
     fetch(apiUrl)
       .then((response) => response.json())
       .then((data) => {
-        console.log('apidata',data);
         setRows(data);
 
     },[]);
@@ -174,11 +173,10 @@ const Command = ({ id, onExecute }) => {
     }
     if (deleted) {
       const deletedSet = new Set(deleted);
-      console.log(deleted);
+      
       changedRows = rows.filter(row => row.id!=deleted[0]);
       setRows(changedRows);
       
-  console.log(changedRows);
     }
 
     
