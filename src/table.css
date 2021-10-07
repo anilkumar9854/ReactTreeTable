@@ -94,6 +94,17 @@ table td:nth-child(5){
   text-align: right;
   padding: 10px !important;
 }
+th:nth-child(4) > div > div{
+  justify-content: center;
+}
+
+th:nth-child(5) > div > div {
+  justify-content: right;
+}
+table td:nth-child(6),table td:nth-child(7),
+table th:nth-child(4), th:nth-child(5),table th:nth-child(6),table th:nth-child(7){
+  padding: 10px !important;
+}
 table td , table th{
   border-left: 1px solid rgba(224,224,224,1);
   border-right: 1px solid rgba(224,224,224,1);
