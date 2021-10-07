@@ -1,91 +1,271 @@
-table th{
-    background-color: rgba(0,0,0,0.1);
-    font-family: Arial;
-    height: 20px;
-}
-table tbody tr td button svg path{
-    fill : steelblue;
-}
-.MuiTableCell-root{
-    padding: 0px !important;
-}
-.MuiSvgIcon-root {
-    width: 0.8em !important;
-    height: 0.8em !important;
-}
-.table_container>div>div>div{
-    height: 500px;
-}
+import React, { useState, useEffect } from 'react';
+import Paper from '@material-ui/core/Paper';
+import './table.css';
+import {
+  SelectionState,
+  IntegratedSelection,PagingState,IntegratedPaging,
+  TreeDataState,EditingState,
+  CustomTreeData,
+} from '@devexpress/dx-react-grid';
+import {
+  Grid,
+  Table,
+  TableHeaderRow,
+  TableTreeColumn,
+  TableSelection,
+  PagingPanel,
+  TableEditRow, TableInlineCellEditing,TableEditColumn,
+} from '@devexpress/dx-react-grid-material-ui';
 
-.table_container>div>div>div::-webkit-scrollbar-track
-{
-	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
-	border-radius: 10px;
-	background-color: #F5F5F5;
-}
-
-.table_container>div>div>div::-webkit-scrollbar
-{
-	width: 12px;
-	background-color: #F5F5F5;
-}
-
-.table_container>div>div>div::-webkit-scrollbar-thumb
-{
-	border-radius: 10px;
-	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.1);
-	background-color: rgba(0,0,0,0.2);
-}
+import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 
 
-/* CSS */
-.btns button {
-  align-items: center;
-  background-color: #FFFFFF;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: .25rem;
-  box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
-  box-sizing: border-box;
-  color: rgba(0, 0, 0, 0.85);
-  cursor: pointer;
-  display: inline-flex;
-  font-family: system-ui,-apple-system,system-ui,"Helvetica Neue",Helvetica,Arial,sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  justify-content: center;
-  line-height: 1;
-  margin: 0;
-  height: 2rem;
-  padding: calc(.875rem - 1px) calc(1.5rem - 1px);
-  position: relative;
-  text-decoration: none;
-  transition: all 250ms;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: baseline;
-  width: auto;
-}
+import {
+  generateRows,
+  defaultColumnValues,
+} from './demo-data/generator';
 
-.btns button:hover,
-.btns button:focus {
-  border-color: rgba(0, 0, 0, 0.15);
-  box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
-  color: rgba(0, 0, 0, 0.65);
-}
+import {apiData} from './gettingData';
 
-.btns button:hover {
-  transform: translateY(-1px);
-}
+const getChildRows = (row, rootRows) => {
+  const childRows = rootRows.filter(r => r.parentId === (row ? row.id : null));
+  return childRows.length ? childRows : null;
+};
 
-.btns button:active {
-  background-color: #F0F0F1;
-  border-color: rgba(0, 0, 0, 0.15);
-  box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
-  color: rgba(0, 0, 0, 0.65);
-  transform: translateY(0);
-}
- td:nth-child(3) {
-  color: steelblue;
-  font-weight: bold;
-}
+var datas=[];
+const columns = [
+  { name: 'firstName', title: 'First Name' },
+  { name: 'lastName', title: 'Last Name' },
+  { name: 'phone', title: 'Phone' },
+  { name: 'state', title: 'State' },
+];
+
+const requiredRule = {
+  isValid: value => value?value.length > 0:"",
+  errorText: 'This field is required',
+};
+const validationRules = {
+  phone: {
+    isValid: phone => phone.match(/^\(\d{3}\) \d{3}-\d{4}$/i),
+    errorText: 'Your phone must have "(555) 555-5555" format!',
+  },
+  account: requiredRule,
+  created_on: requiredRule,
+  created_by: requiredRule,
+  currency: requiredRule,
+
+};
+const validate = (changed, validationStatus) => Object.keys(changed).reduce((status, id) => {
+  let rowStatus = validationStatus[id] || {};
+  if (changed[id]) {
+    rowStatus = {
+      ...rowStatus,
+      ...Object.keys(changed[id]).reduce((acc, field) => {
+        const isValid = validationRules[field].isValid(changed[id][field]);
+        return {
+          ...acc,
+          [field]: {
+            isValid,
+            error: !isValid && validationRules[field].errorText,
+          },
+        };
+      }, {}),
+    };
+  }
+
+  return { ...status, [id]: rowStatus };
+}, {});
+
+export default () => {
+  const [rows, setRows] = useState(
+    []
+);
+console.log(rows);
+  useEffect( () => {
+    const apiUrl = 'https://raw.githubusercontent.com/anilkumar9854/treetabledata/main/treeData.json';
+    fetch(apiUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('apidata',data);
+        setRows(data);
+
+    },[]);
+},[]);
+  const [columns] = useState([
+    { name: 'name', title: 'Name' },
+    { name: 'account', title: 'Account' },
+    { name: 'created_on', title: 'Created On' },
+    { name: 'created_by', title: 'Created By' },
+    { name: 'currency', title: 'Currency' },
+  ]);
+  
+  const [selection, setSelection] = useState([]);
+  const [update_disable, setUpdateDisable] = useState("false");
+  
+  const [data] = useState(generateRows({
+    columnValues: {
+      id: ({ index }) => index,
+      parentId: ({ index, random }) => (index > 0 ? Math.trunc((random() * index) / 2) : null),
+      ...defaultColumnValues,
+    },
+    length: 20,
+  }));
+  const [tableColumnExtensions] = useState([
+    { columnName: 'name', width: 300 },
+  ]);
+  const [defaultExpandedRowIds] = useState([0,1,2,3,4,5,6]);
+  const onSumbnit= () =>{
+    let selectedRows=rows.filter(function(d){
+      return selection.indexOf(d.id)!=-1
+    });
+    console.log(selectedRows);
+  
+  }
+
+  const [editingRowIds, setEditingRowIds] = useState([]);
+  const [rowChanges, setRowChanges] = useState({});
+  const [validationStatus, setValidationStatus] = useState({});
+  const [modifiedRows, setModifiedRows] = useState(rows);
+  const DeleteButton = ({ onExecute }) => (
+    <IconButton
+      onClick={() => {
+        // eslint-disable-next-line
+        if (window.confirm('Are you sure you want to delete this row?')) {
+          onExecute();
+        }
+      }}
+      title="Delete row"
+    >
+      <DeleteIcon />
+    </IconButton>
+  );
+  
+const AddButton = ({ onExecute }) => (
+  <div style={{ textAlign: 'center' }}>
+    <Button
+      color="primary"
+      onClick={onExecute}
+      title="Create new row"
+    >
+      New
+    </Button>
+  </div>
+);
+  const commandComponents = {
+    add: AddButton,
+    delete: DeleteButton,
+  };
+  
+const Command = ({ id, onExecute }) => {
+  const CommandButton = commandComponents[id];
+  return (
+    <CommandButton
+      onExecute={onExecute}
+    />
+  );
+};
+  const commitChanges = ({ changed, deleted }) => {
+    let changedRows;
+    if (changed) {
+      changedRows = rows.map(row => (changed[row.id] ? { ...row, ...changed[row.id] } : row));
+      setValidationStatus({ ...validationStatus, ...validate(changed, validationStatus) });
+    }
+    if (deleted) {
+      const deletedSet = new Set(deleted);
+      console.log(deleted);
+      changedRows = rows.filter(row => row.id!=deleted[0]);
+      setRows(changedRows);
+      
+  console.log(changedRows);
+    }
+
+    
+    setModifiedRows(changedRows);
+  };
+  const Cell = React.useCallback((props) => {
+    const { tableRow: { rowId }, column: { name: columnName } } = props;
+    const columnStatus = validationStatus[rowId]?"":[columnName];
+    const valid = !columnStatus || columnStatus.isValid;
+    const style = {
+      ...(!valid ? { border: '1px solid red' } : null),
+    };
+    const title = valid ? '' : validationStatus[rowId][columnName].error;
+
+    return (
+      <Table.Cell
+        {...props}
+        style={style}
+        title={title}
+      />
+    );
+  }, [validationStatus]);
+  return (
+    <div>
+      <div>
+        <div className="table_container">
+        <Paper>
+        <Grid
+            rows={rows}
+            columns={columns}
+          >
+          <SelectionState
+            selection={selection}
+            onSelectionChange={setSelection}
+          />
+            <EditingState
+              editingRowIds={editingRowIds}
+              onEditingRowIdsChange={setEditingRowIds}
+              rowChanges={rowChanges}
+              onRowChangesChange={(e) => {
+                setRowChanges(e);
+                setUpdateDisable("false");
+              }}
+              onCommitChanges={commitChanges}
+            />
+            <Table
+              cellComponent={Cell}
+            />
+            <TreeDataState
+              defaultExpandedRowIds={defaultExpandedRowIds}
+            />
+            <CustomTreeData
+              getChildRows={getChildRows}
+            />
+            <Table
+              columnExtensions={tableColumnExtensions}
+            />
+            <PagingState
+              defaultCurrentPage={0}
+              pageSize={6}
+            />
+            <TableEditColumn
+              width={60}
+              showDeleteCommand
+              commandComponent={Command}
+            />
+            <IntegratedSelection />
+            <IntegratedPaging />
+            <TableHeaderRow />
+            <TableTreeColumn
+              for="name"
+              showSelectionControls
+              showSelectAll
+            />
+            <TableInlineCellEditing />
+            {/* <PagingPanel /> */}
+          </Grid>
+        </Paper>
+        </div>
+      </div>
+      <div className="btns" style={{paddingTop:'10px'}}>
+        <button onClick={() => {
+          setRows(modifiedRows);
+          setUpdateDisable("true");
+        }} >Update</button>
+      <button onClick={onSumbnit}>Submit</button>
+      </div>
+    </div>
+  );
+};
