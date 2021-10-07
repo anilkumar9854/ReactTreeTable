@@ -34,14 +34,6 @@ const getChildRows = (row, rootRows) => {
   return childRows.length ? childRows : null;
 };
 
-var datas=[];
-const columns = [
-  { name: 'firstName', title: 'First Name' },
-  { name: 'lastName', title: 'Last Name' },
-  { name: 'phone', title: 'Phone' },
-  { name: 'state', title: 'State' },
-];
-
 const requiredRule = {
   isValid: value => value?value.length > 0:"",
   errorText: 'This field is required',
@@ -93,11 +85,11 @@ export default () => {
     },[]);
 },[]);
   const [columns] = useState([
-    { name: 'name', title: 'Name' },
+    { name: 'name', title: 'Description' },
     { name: 'account', title: 'Account' },
     { name: 'created_on', title: 'Created On' },
     { name: 'created_by', title: 'Created By' },
-    { name: 'currency', title: 'Currency' },
+    { name: 'currency', title: 'Currency' }
   ]);
   
   const [selection, setSelection] = useState([]);
@@ -112,7 +104,7 @@ export default () => {
     length: 20,
   }));
   const [tableColumnExtensions] = useState([
-    { columnName: 'name', width: 300 },
+    { columnName: 'name', width: 450 },
   ]);
   const [defaultExpandedRowIds] = useState([0,1,2,3,4,5,6]);
   const onSumbnit= () =>{
