@@ -51,13 +51,10 @@ const validationRules = {
     isValid: phone => phone.match(/^\(\d{3}\) \d{3}-\d{4}$/i),
     errorText: 'Your phone must have "(555) 555-5555" format!',
   },
-  name: requiredRule,
-  firstName: requiredRule,
-  lastName: requiredRule,
-  state: requiredRule,
-  gender: requiredRule,
-  city: requiredRule,
-  car: requiredRule,
+  account: requiredRule,
+  created_on: requiredRule,
+  created_by: requiredRule,
+  currency: requiredRule,
 
 };
 const validate = (changed, validationStatus) => Object.keys(changed).reduce((status, id) => {
@@ -82,27 +79,54 @@ const validate = (changed, validationStatus) => Object.keys(changed).reduce((sta
 }, {});
 
 export default () => {
-  const [rows, setRows] = useState(generateRows({
-    columnValues: {
-      id: ({ index }) => index,
-      parentId: ({ index, random }) => (index > 0 ? Math.trunc((random() * index) / 2) : null),
-      ...defaultColumnValues,
-    },
-    length: 10,
-  }));
+  const [rows, setRows] = useState(
+    [
+      {"id":0, "parentId":null ,"name":"Assets", "account":"" },
+      {"id":1, "parentId":0 ,"name":"External Accounting", "account":""},
+      {"id":2, "parentId":1 ,"name":"Cash and Cash balances", "car":"", "city":"","gender":"" },
+      {"id":3, "parentId":2 ,"name":"Cash Reserve", "account":1010131,"created_on":"30.8.2020","created_by":"SAP" ,"currency":"CHF"},
+      {"id":4, "parentId":2 ,"name":"Values Undergoing Collection", "account":1012131 ,"created_on":"25.8.2020","created_by":"SAP","currency":"CHF"},
+      {"id":5, "parentId":2 ,"name":"Bank Account Number", "account":1011000,"created_on":"22.8.2020","created_by":"SAP","currency":"EUR"},
+      {"id":6, "parentId":2 ,"name":"Bank Clearing Number", "account":1011100 ,"created_on":"14.8.2020","created_by":"SAP","currency":"CHF"},
+      {"id":7, "parentId":2 ,"name":"IFX Adjustment Account: FI-GL",  "account":1011200,"created_on":"28.8.2020","created_by":"SAP","currency":"EUR" },
+      {"id":8, "parentId":1 ,"name":"Loans and Advances",  "account":""},
+      {"id":9, "parentId":8 ,"name":"Risk Provision", "account":""},
+      {"id":10, "parentId":1 ,"name":"Derivative Hedging Instruments - Assets", "account":"" },
+      {"id":11, "parentId":10 ,"name":"Derivative Hedge Accounting",  "account":1040111,"created_on":"21.8.2020","created_by":"SAP" ,"currency":"USD"},
+      {"id":12, "parentId":10 ,"name":"Fair Value Charges of Hedge Items",  "account":1040211,"created_on":"10.8.2020","created_by":"SAP","currency":"USD" },
+      {"id":13, "parentId":1 ,"name":"Securities and Equity Holding",  "account":""},
+      {"id":14, "parentId":13 ,"name":"Shares of Corporation",  "account":""},
+      {"id":15, "parentId":1 ,"name":"Trading Assets",  "account":""},
+      {"id":16, "parentId":1 ,"name":"Intangible Assets",  "account":""},
+      {"id":17, "parentId":16 ,"name":"Patents",  "account":"" },
+      {"id":18, "parentId":16 ,"name":"Trade Marks",  "account":"" },
+      {"id":19, "parentId":1 ,"name":"Fixed Assets",  "account":"" },
+      {"id":20, "parentId":19 ,"name":"Property & Equipments",  "account":1030255,"created_on":"5.8.2020","created_by":"SAP","currency":"EUR" },
+      {"id":21, "parentId":19 ,"name":"Cash",  "account":1030544,"created_on":"13.8.2020","created_by":"SAP","currency":"CHF"},
+      {"id":22, "parentId":1 ,"name":"Income Tax Receivables",  "account":"","created_on":"18.8.2020","created_by":"SAP","currency":"EUR"},
+      {"id":23, "parentId":22 ,"name":"Tax Return",  "account":1010113,"created_on":"20.8.2020","created_by":"SAP","currency":"USD"},
+      {"id":24, "parentId":1 ,"name":"Other Assets",  "account":""},
+      {"id":25, "parentId":23 ,"name":"Investments",  "account":1050466,"created_on":"19.8.2020","created_by":"SAP","currency":"USD"}    
+  ]
+    
+);
+console.log(rows);
   useEffect( () => {
     const apiUrl = 'https://raw.githubusercontent.com/anilkumar9854/treetabledata/main/treeData.json';
     fetch(apiUrl)
       .then((response) => response.json())
       .then((data) => {
-        setRows(data);
+        console.log('apidata',data);
+        //setRows(data);
+
     },[]);
 },[]);
   const [columns] = useState([
     { name: 'name', title: 'Name' },
-    { name: 'gender', title: 'Gender' },
-    { name: 'city', title: 'City' },
-    { name: 'car', title: 'Car' },
+    { name: 'account', title: 'Account' },
+    { name: 'created_on', title: 'Created On' },
+    { name: 'created_by', title: 'Created By' },
+    { name: 'currency', title: 'Currency' },
   ]);
   
   const [selection, setSelection] = useState([]);
@@ -170,7 +194,6 @@ const Command = ({ id, onExecute }) => {
     />
   );
 };
-  
   const commitChanges = ({ changed, deleted }) => {
     let changedRows;
     if (changed) {
@@ -179,10 +202,14 @@ const Command = ({ id, onExecute }) => {
     }
     if (deleted) {
       const deletedSet = new Set(deleted);
-      changedRows = rows.filter(row => !deletedSet.has(row.id));
+      console.log(deleted);
+      changedRows = rows.filter(row => row.id!=deleted[0]);
+      setRows(changedRows);
+      
+  console.log(changedRows);
     }
 
-    setRows(changedRows);
+    
     setModifiedRows(changedRows);
   };
   const Cell = React.useCallback((props) => {
@@ -242,7 +269,7 @@ const Command = ({ id, onExecute }) => {
               pageSize={6}
             />
             <TableEditColumn
-              width={80}
+              width={60}
               showAddCommand
               showDeleteCommand
               commandComponent={Command}
