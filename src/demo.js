@@ -121,6 +121,10 @@ export default () => {
     fetch(apiUrl)
       .then((response) => response.json())
       .then((data) => {
+        console.log(data);
+        data.forEach( (d) => {
+          d.checkbox=<input className="selection" id={d.id.toString()} type='checkbox' onClick={checkboxClick}/>;
+        });
         setRows(data);
 
       }, []);
