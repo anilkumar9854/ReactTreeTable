@@ -117,7 +117,12 @@ table td , table th{
 table td:first-child, table th:first-child {
   border-left: none;
 }
-
+table td:first-child{
+  pointer-events: none;
+}
+table td:first-child input{
+  pointer-events: all;
+}
 table td:last-child, table th:last-child {
   border-right: none;
 }
