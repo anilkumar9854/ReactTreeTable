@@ -89,7 +89,11 @@ const validate = (changed, validationStatus) => Object.keys(changed).reduce((sta
 }, {});
 const checkboxClick= (event) => {
   event.stopPropagation();
-  
+  if(!event.target.checked){
+    if(document.querySelector('.selectAllBoxes').checked){
+      document.querySelector('.selectAllBoxes:checked').checked=false;
+    }
+  }
 }
 
 const selectAllBoxes = (event) => {
