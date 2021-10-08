@@ -160,10 +160,22 @@ export default () => {
 
   const [tableColumnExtensions] = useState([{
     columnName: 'name',
-    width: 430,
+    width: '40%',
+  },{
+    columnName: 'account',
+    width: '10%',
+  },{
+    columnName: 'created_on',
+    width: '15%',
+  },{
+    columnName: 'created_by',
+    width: '15%',
+  },{
+    columnName: 'currency',
+    width: '10%',
   },{
     columnName: 'checkbox',
-    width: 40,
+    width: "4%",
     textAlign: "center"
   } ]);
   const [defaultExpandedRowIds] = useState([0, 1, 2, 3, 4, 5, 6]);
@@ -295,7 +307,7 @@ export default () => {
                 computed={({ tableColumns }) => {
                   const result = [
                     ...tableColumns.filter(c => c.type !== TableEditColumn.COLUMN_TYPE),
-                    { key: 'editCommand', type: TableEditColumn.COLUMN_TYPE, width: 40 }
+                    { key: 'editCommand', type: TableEditColumn.COLUMN_TYPE, width: '5.8%' }
                   ];
                   return result;
                 }
